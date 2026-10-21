@@ -11,6 +11,11 @@ and an asynchronous client. For this assignment, students may use offline
 generation unless the instructor requires online arrival-time measurements.
 """
 
+import sys
+# Prevent ABI mismatches in unused audio/vision libraries from crashing text LLM loading
+sys.modules.setdefault("torchaudio", None)
+sys.modules.setdefault("torchvision", None)
+
 import argparse
 import json
 import time
