@@ -702,5 +702,33 @@ We evaluated a realistic 50-request Poisson workload (prompt lengths <em>N &isin
 
 <div class="page-break"></div>
 
+<h2>Part 6. Interpretation and Reflection</h2>
+
+<div class="highlight-box">
+    <strong>Core Question:</strong> Why is LLM serving fundamentally a systems problem rather than simply a model-inference problem?
+</div>
+
+<p>
+Traditional machine learning treats inference as a static mapping from input tensors to output tensors, characterized by deterministic execution graphs, uniform batch shapes, and predictable runtimes. However, our empirical findings across Parts 0 through 4 demonstrate that Large Language Model (LLM) serving is fundamentally a dynamic systems problem, dominated by resource scheduling, stateful memory management, and queuing dynamics rather than simple neural-network forward passes.
+</p>
+
+<p>
+First, autoregressive generation introduces an asymmetric two-phase execution lifecycle. In Part 1, we measured prefill as an <em>O(N<sup>2</sup>)</em> compute-bound operation processing all prompt tokens simultaneously via dense GEMMs, achieving high arithmetic intensity on our NVIDIA A100 GPU. Conversely, decoding is inherently sequential and severely memory-bandwidth bound, requiring the entire parameter matrix and expanding KV cache to be loaded from High Bandwidth Memory (HBM) to produce just one token at an iteration latency of ~6.3 ms/token. Coordinating these two conflicting execution regimes—one compute-bound and parallel, the other memory-bound and sequential—requires systems-level scheduling (such as chunked prefill and iteration-level piggybacking) rather than model-level optimizations.
+</p>
+
+<p>
+Second, LLM serving is intensely stateful. As derived in Part 2 (<code>M<sub>KV</sub> = 2 &times; B &times; L &times; S &times; H<sub>KV</sub> &times; D &times; b</code>), each request dynamically accumulates key-value tensors at every generation step. In high-concurrency environments, this dynamic KV cache footprint rapidly dwarfs static model weights, causing GPUs to hit memory capacity cliffs (Out-Of-Memory) long before Tensor Cores are compute-saturated. Managing this memory dynamically without catastrophic fragmentation is fundamentally an operating systems virtual memory challenge, solved by paging architectures (PagedAttention) rather than deep learning algorithms.
+</p>
+
+<p>
+Third, real production workloads exhibit extreme arrival and length heterogeneity. When executing 50 heterogeneous requests in Part 4, naive static batching achieved only 4.74 requests/s with an abysmal 50.2% prompt-padding efficiency and a P95 latency of 1.771 s caused by head-of-line blocking. By replacing static execution with systems mechanisms—continuous iteration-level batching and non-contiguous paged memory—vLLM eliminated padding waste entirely and achieved 56.44 requests/s (an 11.9× throughput improvement) in 0.886 s on the exact same model weights and hardware.
+</p>
+
+<p>
+Ultimately, serving LLMs at scale is not governed by the model’s mathematical forward pass. It is dictated by memory allocation, tail-latency mitigation, preemption policies, and request multiplexing under strict Service Level Objectives. Therefore, LLM serving is fundamentally an operating systems and distributed systems discipline.
+</p>
+
+<hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 30px 0 20px 0;">
+
 </body>
 </html>
