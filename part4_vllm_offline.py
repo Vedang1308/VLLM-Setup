@@ -39,6 +39,7 @@ def main():
     parser.add_argument("--model", default="gpt2")
     parser.add_argument("--workload", default="workload.json")
     parser.add_argument("--max-tokens", type=int, default=64)
+    parser.add_argument("--dtype", default="float16", choices=["float16", "bfloat16", "auto"], help="Numerical precision")
     args = parser.parse_args()
 
     workload = load_workload(args.workload)
@@ -52,7 +53,7 @@ def main():
         for r in workload
     ]
 
-    llm = LLM(model=args.model)
+    llm = LLM(model=args.model, dtype=args.dtype)
 
     # Simple common max-token setting for an offline comparison.
     # TODO 4:
