@@ -642,5 +642,65 @@ We evaluated a realistic 50-request Poisson workload (prompt lengths <em>N &isin
 
 <div class="page-break"></div>
 
+<h2>Part 5. Production Serving Design Challenge Specification</h2>
+
+<h3>1. Design Objectives & Constraints</h3>
+<div class="formula-box">
+    <strong>SLO Targets:</strong> P95(TTFT) &lt; 1.0 s &nbsp;|&nbsp; P95(TPOT) &lt; 50 ms/token &nbsp;|&nbsp; Maximize Aggregate Throughput
+</div>
+
+<h3>2. Architecture Specification</h3>
+<ol>
+    <li>
+        <strong>Request Scheduling Policy:</strong> We deploy a multi-level priority queue with virtual aging:
+        <code>Priority = (1 / PromptLength) + &alpha; &middot; t<sub>wait</sub></code>.
+        Short prompts receive fast-track scheduling to guarantee <span style="font-family: serif;">TTFT &lt; 1.0 s</span>, while aging factor &alpha; prevents starvation for long-context requests. Decode iterations are given strict priority over new prefills to protect continuous TPOT cadence.
+    </li>
+    <li>
+        <strong>Continuous Dynamic Batching:</strong> Decoding executes at target batch sizes <em>B &isin; [16, 64]</em>, anchored by our Part 3 finding that <em>B=16</em> achieves 2641 tokens/s with 5.97 ms step latency on the A100. Requests are evicted immediately upon <code>&lt;EOS&gt;</code>.
+    </li>
+    <li>
+        <strong>Prefill vs. Decode Scheduling (Chunked Prefill):</strong> Long prefills monopolize the GPU for hundreds of milliseconds ("prefill bubbles"), causing decode tokens to miss the 50 ms TPOT deadline. We enforce a strict step budget:
+        <code>Tokens<sub>step</sub> = Tokens<sub>decode</sub> + Tokens<sub>prefill_chunk</sub> &le; 512</code>.
+        Long prompts are partitioned into 512-token chunks and co-scheduled alongside active decodes, guaranteeing every iteration completes in under 25 ms.
+    </li>
+    <li>
+        <strong>KV-Cache Allocation:</strong> Paged KV management with 16-token physical blocks and Radix-tree prefix caching to share common prompt representations across users.
+    </li>
+    <li>
+        <strong>Long-Context Handling:</strong> Prompts exceeding 2048 tokens are chunked across consecutive forward passes. Individual requests are capped at 15% of total KV block capacity to prevent single-tenant memory exhaustion.
+    </li>
+    <li>
+        <strong>Admission Control:</strong> Proactive memory watermark tracking rejects or delays incoming requests if free KV blocks fall below a 10% safety margin, preventing runtime out-of-memory crashes.
+    </li>
+    <li>
+        <strong>Overload Behavior:</strong> Under sustained overload:
+        <ul>
+            <li><em>Tier 1 (Transient Spike):</em> Suspend lowest-priority decoding requests using chunked recomputation preemption (which our A100 benchmarks prove is faster than host PCIe swapping).</li>
+            <li><em>Tier 2 (Sustained Saturation):</em> Shed traffic at the API gateway with HTTP 429 and accurate <code>Retry-After</code> headers.</li>
+        </ul>
+    </li>
+</ol>
+
+<h3>3. Design Tradeoffs Matrix</h3>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Design Dimension</th>
+            <th>Selected Policy</th>
+            <th>Primary Benefit</th>
+            <th>Accepted Cost / Tradeoff</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Prefill Granularity</strong></td><td>Chunked Prefill (512-tok chunks)</td><td>Guarantees <span style="font-family: serif;">TPOT &lt; 50 ms</span>; prevents decode stalling</td><td>Slight increase in TTFT for ultra-long prompts</td></tr>
+        <tr><td><strong>Cache Management</strong></td><td>PagedAttention (16-tok blocks)</td><td>Zero external fragmentation; 3× concurrency</td><td>Block table lookup overhead in attention kernels</td></tr>
+        <tr><td><strong>Preemption Mechanism</strong></td><td>Chunked Recomputation</td><td>Avoids PCIe host memory bandwidth bottleneck</td><td>Wasted compute when evicted requests resume</td></tr>
+        <tr><td><strong>Admission Control</strong></td><td>Predictive Memory Watermark</td><td>Eliminates catastrophic out-of-memory aborts</td><td>Rejects low-priority requests during peak traffic</td></tr>
+    </tbody>
+</table>
+
+<div class="page-break"></div>
+
 </body>
 </html>
