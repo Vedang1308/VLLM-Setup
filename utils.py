@@ -1,3 +1,7 @@
+import sys
+# Prevent broken torchaudio shared library mismatch from crashing transformers
+sys.modules.setdefault("torchaudio", None)
+
 import time
 import random
 import numpy as np
