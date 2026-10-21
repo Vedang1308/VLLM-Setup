@@ -121,7 +121,10 @@ def generate_without_cache(model, input_ids, output_length):
         # so every step must re-process all tokens in `sequence`.
         # Be sure to pass `use_cache=False`.
         # --------------------------------------------------------
-        outputs = None  # replace this line
+        outputs = model(
+            input_ids=sequence,
+            use_cache=False,
+        )
 
         # --------------------------------------------------------
         # TODO (b): Greedily predict the next token.
@@ -130,13 +133,17 @@ def generate_without_cache(model, input_ids, output_length):
         # vocabulary. Keep the result shaped [batch, 1] so it can be
         # concatenated to `sequence` (see generate_with_cache()).
         # --------------------------------------------------------
-        next_token = None  # replace this line
+        next_token = torch.argmax(
+            outputs.logits[:, -1, :],
+            dim=-1,
+            keepdim=True,
+        )
 
         # --------------------------------------------------------
         # TODO (c): Append the new token to the complete sequence
         # along the sequence dimension (dim=1).
         # --------------------------------------------------------
-        sequence = sequence  # replace this line
+        sequence = torch.cat([sequence, next_token], dim=1)
 
     return sequence
 
@@ -235,6 +242,13 @@ def main():
         help="Output CSV file",
     )
 
+    parser.add_argument(
+        "--repeats",
+        type=int,
+        default=3,
+        help="Number of repetitions to average (Part 0, Rule 6)",
+    )
+
     args = parser.parse_args()
 
     # Reproducibility
@@ -246,14 +260,21 @@ def main():
     print(f"Using device: {dev}")
 
     # Load model
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model,
-        torch_dtype=(
-            torch.float16
-            if torch.device(dev).type == "cuda"
-            else torch.float32
-        ),
-    ).to(dev)
+    dtype_val = (
+        torch.float16
+        if torch.device(dev).type == "cuda"
+        else torch.float32
+    )
+    try:
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model,
+            dtype=dtype_val,
+        ).to(dev)
+    except TypeError:
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model,
+            torch_dtype=dtype_val,
+        ).to(dev)
 
     model.eval()
 
@@ -309,18 +330,33 @@ def main():
 
             print(
                 f"output_length={output_length}, "
-                f"use_cache={use_cache}"
+                f"use_cache={use_cache} ({args.repeats} repeats)"
             )
 
-            result, sequence = benchmark(
-                model=model,
-                input_ids=input_ids,
-                output_length=output_length,
-                use_cache=use_cache,
-            )
+            repeat_results = []
+            final_sequence = None
+            for _ in range(args.repeats):
+                res, seq = benchmark(
+                    model=model,
+                    input_ids=input_ids,
+                    output_length=output_length,
+                    use_cache=use_cache,
+                )
+                repeat_results.append(res)
+                if final_sequence is None:
+                    final_sequence = seq
 
-            rows.append(result)
-            sequences[use_cache] = sequence
+            avg_result = {
+                "use_cache": use_cache,
+                "prompt_length": prompt_length,
+                "output_length": output_length,
+                "latency_sec": sum(r["latency_sec"] for r in repeat_results) / len(repeat_results),
+                "ms_per_token": sum(r["ms_per_token"] for r in repeat_results) / len(repeat_results),
+                "peak_memory_gb": max(r["peak_memory_gb"] for r in repeat_results),
+            }
+
+            rows.append(avg_result)
+            sequences[use_cache] = final_sequence
 
         # -----------------------------
         # Agreement check

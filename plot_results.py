@@ -80,23 +80,65 @@ def plot_part1(path):
 def plot_part2(path):
     df = pd.read_csv(path)
 
-    plt.figure()
+    # 1. Output Length vs Generation Latency
+    plt.figure(figsize=(7, 5))
     for cache_value in [True, False]:
         subset = df[df["use_cache"] == cache_value]
-
         plt.plot(
             subset["output_length"],
             subset["latency_sec"],
             marker="o",
             label=f"use_cache={cache_value}",
         )
-
-    plt.xlabel("Output Length")
+    plt.xlabel("Output Length (tokens)")
     plt.ylabel("Generation Latency (s)")
-    plt.title("KV Cache vs Generation Latency")
+    plt.title("Task 2.2: KV Cache vs. Generation Latency")
     plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.5)
     plt.savefig("part2_kv_latency.pdf", bbox_inches="tight")
+    plt.savefig("part2_kv_latency.png", bbox_inches="tight", dpi=300)
     plt.close()
+
+    # 2. Output Length vs ms per output token
+    if "ms_per_token" in df.columns:
+        plt.figure(figsize=(7, 5))
+        for cache_value in [True, False]:
+            subset = df[df["use_cache"] == cache_value]
+            plt.plot(
+                subset["output_length"],
+                subset["ms_per_token"],
+                marker="s",
+                label=f"use_cache={cache_value}",
+            )
+        plt.xlabel("Output Length (tokens)")
+        plt.ylabel("Latency per Output Token (ms)")
+        plt.title("Task 2.2: KV Cache vs. Latency per Output Token")
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.5)
+        plt.savefig("part2_kv_ms_per_token.pdf", bbox_inches="tight")
+        plt.savefig("part2_kv_ms_per_token.png", bbox_inches="tight", dpi=300)
+        plt.close()
+
+    # 3. Output Length vs Peak GPU Memory
+    if "peak_memory_gb" in df.columns:
+        plt.figure(figsize=(7, 5))
+        for cache_value in [True, False]:
+            subset = df[df["use_cache"] == cache_value]
+            plt.plot(
+                subset["output_length"],
+                subset["peak_memory_gb"],
+                marker="^",
+                label=f"use_cache={cache_value}",
+            )
+        plt.xlabel("Output Length (tokens)")
+        plt.ylabel("Peak GPU Memory (GB)")
+        plt.title("Task 2.2: KV Cache vs. Peak GPU Memory")
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.5)
+        plt.savefig("part2_kv_memory.pdf", bbox_inches="tight")
+        plt.savefig("part2_kv_memory.png", bbox_inches="tight", dpi=300)
+        plt.close()
+    print("Generated Part 2 plots: part2_kv_latency, part2_kv_ms_per_token, part2_kv_memory")
 
 
 def plot_part3(path):
