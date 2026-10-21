@@ -38,8 +38,12 @@ def main():
 
     workload = load_workload(args.workload)
 
+    # Ensure prompt + max_tokens fits within model context limit (1024 for GPT-2)
+    max_context = 1024
+    safe_prompt_cap = max(16, max_context - args.max_tokens - 4)
+
     prompts = [
-        make_prompt(r["prompt_length"])
+        make_prompt(min(r["prompt_length"], safe_prompt_cap))
         for r in workload
     ]
 

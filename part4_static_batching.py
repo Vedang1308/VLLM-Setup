@@ -16,9 +16,15 @@ def load_workload(path):
 @torch.no_grad()
 def process_static_batch(model, batch, dev):
     batch_size = len(batch)
+    max_pos = getattr(model.config, "max_position_embeddings", 1024)
 
     max_prompt = max(r["prompt_length"] for r in batch)
     max_output = max(r["output_length"] for r in batch)
+
+    # Context window guard for GPT-2: total sequence length cannot exceed max_pos
+    if max_prompt + max_output > max_pos:
+        max_prompt = min(max_prompt, max_pos - 16)
+        max_output = min(max_output, max_pos - max_prompt)
 
     input_ids = torch.zeros(
         (batch_size, max_prompt),
@@ -33,7 +39,7 @@ def process_static_batch(model, batch, dev):
     )
 
     for i, request in enumerate(batch):
-        length = request["prompt_length"]
+        length = min(request["prompt_length"], max_prompt)
 
         tokens = torch.randint(
             0,
@@ -73,10 +79,17 @@ def main():
     seed_everything(42)
     dev = device()
 
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model,
-        torch_dtype=torch.float16 if dev == "cuda" else torch.float32,
-    ).to(dev)
+    dtype_val = torch.float16 if dev == "cuda" else torch.float32
+    try:
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model,
+            dtype=dtype_val,
+        ).to(dev)
+    except TypeError:
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model,
+            torch_dtype=dtype_val,
+        ).to(dev)
     model.eval()
 
     workload = load_workload(args.workload)

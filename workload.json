@@ -1,0 +1,302 @@
+[
+  {
+    "request_id": 0,
+    "arrival_time": 0.2040120574549602,
+    "prompt_length": 32,
+    "output_length": 64
+  },
+  {
+    "request_id": 1,
+    "arrival_time": 0.26019091745407724,
+    "prompt_length": 64,
+    "output_length": 16
+  },
+  {
+    "request_id": 2,
+    "arrival_time": 0.4860255192137958,
+    "prompt_length": 512,
+    "output_length": 16
+  },
+  {
+    "request_id": 3,
+    "arrival_time": 0.6645855374614847,
+    "prompt_length": 32,
+    "output_length": 16
+  },
+  {
+    "request_id": 4,
+    "arrival_time": 0.6842614673931761,
+    "prompt_length": 64,
+    "output_length": 256
+  },
+  {
+    "request_id": 5,
+    "arrival_time": 0.8685315339370723,
+    "prompt_length": 512,
+    "output_length": 32
+  },
+  {
+    "request_id": 6,
+    "arrival_time": 1.1203015544953887,
+    "prompt_length": 1024,
+    "output_length": 256
+  },
+  {
+    "request_id": 7,
+    "arrival_time": 1.229081479108174,
+    "prompt_length": 256,
+    "output_length": 256
+  },
+  {
+    "request_id": 8,
+    "arrival_time": 1.2942803418689233,
+    "prompt_length": 32,
+    "output_length": 32
+  },
+  {
+    "request_id": 9,
+    "arrival_time": 1.5338383300636202,
+    "prompt_length": 128,
+    "output_length": 64
+  },
+  {
+    "request_id": 10,
+    "arrival_time": 1.5676355836810743,
+    "prompt_length": 128,
+    "output_length": 16
+  },
+  {
+    "request_id": 11,
+    "arrival_time": 1.5871021139490658,
+    "prompt_length": 32,
+    "output_length": 64
+  },
+  {
+    "request_id": 12,
+    "arrival_time": 1.9632128622756935,
+    "prompt_length": 512,
+    "output_length": 64
+  },
+  {
+    "request_id": 13,
+    "arrival_time": 2.292358850156745,
+    "prompt_length": 1024,
+    "output_length": 128
+  },
+  {
+    "request_id": 14,
+    "arrival_time": 2.446031334962779,
+    "prompt_length": 256,
+    "output_length": 16
+  },
+  {
+    "request_id": 15,
+    "arrival_time": 2.606641884060076,
+    "prompt_length": 1024,
+    "output_length": 256
+  },
+  {
+    "request_id": 16,
+    "arrival_time": 3.039993709931937,
+    "prompt_length": 128,
+    "output_length": 256
+  },
+  {
+    "request_id": 17,
+    "arrival_time": 3.0827038000157967,
+    "prompt_length": 32,
+    "output_length": 16
+  },
+  {
+    "request_id": 18,
+    "arrival_time": 3.2992102448890366,
+    "prompt_length": 128,
+    "output_length": 16
+  },
+  {
+    "request_id": 19,
+    "arrival_time": 3.6858532689135504,
+    "prompt_length": 32,
+    "output_length": 128
+  },
+  {
+    "request_id": 20,
+    "arrival_time": 3.750991984907209,
+    "prompt_length": 1024,
+    "output_length": 64
+  },
+  {
+    "request_id": 21,
+    "arrival_time": 3.7864955906705386,
+    "prompt_length": 128,
+    "output_length": 32
+  },
+  {
+    "request_id": 22,
+    "arrival_time": 4.00833431005255,
+    "prompt_length": 1024,
+    "output_length": 16
+  },
+  {
+    "request_id": 23,
+    "arrival_time": 4.196210875651804,
+    "prompt_length": 64,
+    "output_length": 256
+  },
+  {
+    "request_id": 24,
+    "arrival_time": 4.457431766994281,
+    "prompt_length": 64,
+    "output_length": 128
+  },
+  {
+    "request_id": 25,
+    "arrival_time": 4.55286334033315,
+    "prompt_length": 1024,
+    "output_length": 256
+  },
+  {
+    "request_id": 26,
+    "arrival_time": 4.602456963184961,
+    "prompt_length": 128,
+    "output_length": 16
+  },
+  {
+    "request_id": 27,
+    "arrival_time": 4.654482814687092,
+    "prompt_length": 32,
+    "output_length": 64
+  },
+  {
+    "request_id": 28,
+    "arrival_time": 4.757036579138638,
+    "prompt_length": 32,
+    "output_length": 32
+  },
+  {
+    "request_id": 29,
+    "arrival_time": 5.245719185433635,
+    "prompt_length": 512,
+    "output_length": 64
+  },
+  {
+    "request_id": 30,
+    "arrival_time": 5.293529707845017,
+    "prompt_length": 256,
+    "output_length": 128
+  },
+  {
+    "request_id": 31,
+    "arrival_time": 5.725544058962241,
+    "prompt_length": 1024,
+    "output_length": 128
+  },
+  {
+    "request_id": 32,
+    "arrival_time": 5.7563775660592515,
+    "prompt_length": 64,
+    "output_length": 32
+  },
+  {
+    "request_id": 33,
+    "arrival_time": 6.0296672715138975,
+    "prompt_length": 512,
+    "output_length": 64
+  },
+  {
+    "request_id": 34,
+    "arrival_time": 6.3045513481650355,
+    "prompt_length": 256,
+    "output_length": 256
+  },
+  {
+    "request_id": 35,
+    "arrival_time": 6.406516741063609,
+    "prompt_length": 64,
+    "output_length": 32
+  },
+  {
+    "request_id": 36,
+    "arrival_time": 6.548993462519192,
+    "prompt_length": 32,
+    "output_length": 16
+  },
+  {
+    "request_id": 37,
+    "arrival_time": 6.943797857992274,
+    "prompt_length": 64,
+    "output_length": 32
+  },
+  {
+    "request_id": 38,
+    "arrival_time": 7.257917624298368,
+    "prompt_length": 256,
+    "output_length": 256
+  },
+  {
+    "request_id": 39,
+    "arrival_time": 7.271044692762666,
+    "prompt_length": 256,
+    "output_length": 256
+  },
+  {
+    "request_id": 40,
+    "arrival_time": 8.381499876886323,
+    "prompt_length": 512,
+    "output_length": 64
+  },
+  {
+    "request_id": 41,
+    "arrival_time": 9.090133033716503,
+    "prompt_length": 32,
+    "output_length": 16
+  },
+  {
+    "request_id": 42,
+    "arrival_time": 9.31909173801534,
+    "prompt_length": 512,
+    "output_length": 64
+  },
+  {
+    "request_id": 43,
+    "arrival_time": 9.611812135493315,
+    "prompt_length": 128,
+    "output_length": 16
+  },
+  {
+    "request_id": 44,
+    "arrival_time": 9.681298587283067,
+    "prompt_length": 64,
+    "output_length": 128
+  },
+  {
+    "request_id": 45,
+    "arrival_time": 9.681948705995294,
+    "prompt_length": 1024,
+    "output_length": 64
+  },
+  {
+    "request_id": 46,
+    "arrival_time": 10.396261158905507,
+    "prompt_length": 64,
+    "output_length": 256
+  },
+  {
+    "request_id": 47,
+    "arrival_time": 10.883776873912353,
+    "prompt_length": 1024,
+    "output_length": 64
+  },
+  {
+    "request_id": 48,
+    "arrival_time": 11.25239081382938,
+    "prompt_length": 512,
+    "output_length": 256
+  },
+  {
+    "request_id": 49,
+    "arrival_time": 11.29674748463099,
+    "prompt_length": 128,
+    "output_length": 32
+  }
+]
