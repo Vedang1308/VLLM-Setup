@@ -76,6 +76,8 @@ def main():
     parser.add_argument("--model", default="gpt2")
     parser.add_argument("--out", default="part1_prefill_decode.csv")
     parser.add_argument("--repeats", type=int, default=3, help="Number of repetitions to average (Rule 6)")
+    parser.add_argument("--prompt-lengths", nargs="+", type=int, default=[128, 512, 768])
+    parser.add_argument("--output-lengths", nargs="+", type=int, default=[32, 128, 256])
     args = parser.parse_args()
 
     seed_everything(42)
@@ -98,12 +100,21 @@ def main():
         ).to(dev)
     model.eval()
 
+    max_pos = getattr(model.config, "max_position_embeddings", 1024)
+
     # Warm-up (Requirement 3: Perform at least one warm-up inference)
     benchmark_case(model, 32, 4, dev)
 
     rows = []
-    for n in [128, 512, 1024]:
-        for m in [32, 128, 256]:
+    for n in args.prompt_lengths:
+        for m in args.output_lengths:
+            if n + m > max_pos:
+                print(
+                    f"Skipping prompt={n}, output={m}: total length ({n + m}) exceeds "
+                    f"{args.model} max context window ({max_pos})"
+                )
+                continue
+
             print(f"Running prompt={n}, output={m} ({args.repeats} repeats)...")
             repeat_results = []
             for _ in range(args.repeats):
