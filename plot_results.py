@@ -145,23 +145,28 @@ def plot_part3(path):
     df = pd.read_csv(path)
 
     metrics = [
-        ("tokens_per_sec", "Tokens / second", "batch_vs_throughput.pdf"),
-        ("latency_sec", "Latency (s)", "batch_vs_latency.pdf"),
-        ("peak_memory_gb", "Peak GPU Memory (GB)", "batch_vs_memory.pdf"),
+        ("tokens_per_sec", "Tokens / second", "batch_vs_throughput"),
+        ("latency_sec", "Latency (s)", "batch_vs_latency"),
+        ("peak_memory_gb", "Peak GPU Memory (GB)", "batch_vs_memory"),
     ]
 
-    for column, ylabel, filename in metrics:
-        plt.figure()
+    for column, ylabel, prefix in metrics:
+        plt.figure(figsize=(7, 5))
         plt.plot(
             df["batch_size"],
             df[column],
             marker="o",
+            linewidth=2,
+            color="#1f77b4",
         )
         plt.xlabel("Batch Size")
         plt.ylabel(ylabel)
-        plt.title(f"Batch Size vs {ylabel}")
-        plt.savefig(filename, bbox_inches="tight")
+        plt.title(f"Task 3.2: Batch Size vs {ylabel}")
+        plt.grid(True, linestyle="--", alpha=0.5)
+        plt.savefig(f"{prefix}.pdf", bbox_inches="tight")
+        plt.savefig(f"{prefix}.png", bbox_inches="tight", dpi=300)
         plt.close()
+    print("Generated Part 3 plots: batch_vs_throughput, batch_vs_latency, batch_vs_memory")
 
 
 def main():
