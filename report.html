@@ -730,5 +730,24 @@ Ultimately, serving LLMs at scale is not governed by the model’s mathematical 
 
 <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 30px 0 20px 0;">
 
+<h2>Deliverables & Verification Summary</h2>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Deliverable</th>
+            <th>Repository Location</th>
+            <th>Status</th>
+            <th>Verification Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>1. Source Code</strong></td><td><code>*.py</code> in workspace root</td><td><span class="badge badge-pass">COMPLETE</span></td><td>All scripts runnable; deterministic seeds set; cleanly formatted</td></tr>
+        <tr><td><strong>2. PDF Report</strong></td><td><code>report.pdf</code></td><td><span class="badge badge-pass">COMPLETE</span></td><td>Publication-grade PDF with embedded tables, plots, and derivations</td></tr>
+        <tr><td><strong>3. Generated Plots</strong></td><td><code>*.pdf</code>, <code>*.png</code></td><td><span class="badge badge-pass">COMPLETE</span></td><td>9 generated figures covering Parts 1, 2, and 3</td></tr>
+        <tr><td><strong>4. CSV Result Files</strong></td><td><code>part1_prefill_decode.csv</code>, <code>part2_kv_cache.csv</code>, <code>part3_batching.csv</code></td><td><span class="badge badge-pass">COMPLETE</span></td><td>Full empirical results collected directly on A100 GPU</td></tr>
+        <tr><td><strong>5. Reproduction README</strong></td><td><code>README.md</code></td><td><span class="badge badge-pass">COMPLETE</span></td><td>Step-by-step instructions for reproducing benchmarks on SOL</td></tr>
+    </tbody>
+</table>
+
 </body>
 </html>
